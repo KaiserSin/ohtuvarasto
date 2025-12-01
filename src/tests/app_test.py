@@ -1,6 +1,7 @@
 """Unit tests for the Flask warehouse web application."""
 
 import unittest
+import app as app_module
 from app import app, warehouses
 
 
@@ -12,6 +13,7 @@ class TestFlaskApp(unittest.TestCase):
         self.client = app.test_client()
         app.config["TESTING"] = True
         warehouses.clear()
+        app_module.next_warehouse_id = 1
 
     def test_index_empty(self):
         """Index page shows no warehouses message when empty."""

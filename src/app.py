@@ -8,11 +8,20 @@ app = Flask(__name__)
 
 # In-memory storage for warehouse instances
 warehouses = {}
+next_warehouse_id = 1
 
 
 def get_warehouse(warehouse_id):
     """Get a warehouse by ID, return None if not found."""
     return warehouses.get(warehouse_id)
+
+
+def parse_amount(amount_str):
+    """Parse amount string to float, return 0.0 on invalid input."""
+    try:
+        return float(amount_str)
+    except ValueError:
+        return 0.0
 
 
 def parse_warehouse_form():
@@ -29,7 +38,9 @@ def parse_warehouse_form():
 
 def save_new_warehouse(name, capacity, initial):
     """Save a new warehouse and return its ID."""
-    warehouse_id = len(warehouses) + 1
+    global next_warehouse_id  # pylint: disable=global-statement
+    warehouse_id = next_warehouse_id
+    next_warehouse_id += 1
     warehouses[warehouse_id] = {
         "name": name,
         "varasto": Varasto(capacity, initial)
@@ -79,12 +90,7 @@ def add_items(warehouse_id):
     if warehouse is None:
         return redirect(url_for("index"))
 
-    amount = request.form.get("amount", "0")
-    try:
-        amount = float(amount)
-    except ValueError:
-        amount = 0
-
+    amount = parse_amount(request.form.get("amount", "0"))
     warehouse["varasto"].lisaa_varastoon(amount)
     return redirect(url_for("view_warehouse", warehouse_id=warehouse_id))
 
@@ -96,15 +102,10 @@ def remove_items(warehouse_id):
     if warehouse is None:
         return redirect(url_for("index"))
 
-    amount = request.form.get("amount", "0")
-    try:
-        amount = float(amount)
-    except ValueError:
-        amount = 0
-
+    amount = parse_amount(request.form.get("amount", "0"))
     warehouse["varasto"].ota_varastosta(amount)
     return redirect(url_for("view_warehouse", warehouse_id=warehouse_id))
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
