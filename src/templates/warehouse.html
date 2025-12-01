@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ warehouse.name }} - Warehouse Manager{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ warehouse.name }}</h1>
+    
+    <div class="stats">
+        <div class="stat-box">
+            <div class="stat-value">{{ warehouse.varasto.saldo }}</div>
+            <div class="stat-label">Current Stock (saldo)</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ warehouse.varasto.tilavuus }}</div>
+            <div class="stat-label">Total Capacity</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ warehouse.varasto.paljonko_mahtuu() }}</div>
+            <div class="stat-label">Available Space</div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Add Items</h2>
+    <form method="POST" class="inline-form" 
+          action="{{ url_for('add_items', warehouse_id=warehouse_id) }}">
+        <input type="number" name="amount" step="0.1" min="0" 
+               placeholder="Amount" required>
+        <button type="submit" class="btn btn-success">Add to Stock</button>
+    </form>
+</div>
+
+<div class="container">
+    <h2>Remove Items</h2>
+    <form method="POST" class="inline-form" 
+          action="{{ url_for('remove_items', warehouse_id=warehouse_id) }}">
+        <input type="number" name="amount" step="0.1" min="0" 
+               placeholder="Amount" required>
+        <button type="submit" class="btn btn-danger">Remove from Stock</button>
+    </form>
+</div>
+{% endblock %}
